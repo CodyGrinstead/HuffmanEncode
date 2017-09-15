@@ -107,7 +107,7 @@ int main()
 		cout << temp_xfer.character <<" "<< temp_xfer.frequency << endl;
 	}
 
-
+	//TODO create binary tree
 
 	system("pause");
 	return 0;
