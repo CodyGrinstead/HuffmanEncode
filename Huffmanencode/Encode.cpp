@@ -15,9 +15,9 @@ struct charFequ
 {
 	char character;
 	int frequency;
-	bool operator<(const charFequ& rhs) const
+	bool operator<(const charFequ& c) const
 	{
-		return frequency > rhs.frequency;
+		return frequency > c.frequency;
 	}
 };
 
