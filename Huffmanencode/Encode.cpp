@@ -3,24 +3,38 @@
 // Huffman Encode
 #include <fstream>
 #include <iomanip>
-#include<iostream>
+#include <iostream>
 #include <string>
-#include<queue>
-
+#include <queue>
+ 
 using namespace std;
 const int totalchar = 128;
 
-
 struct charFequ
 {
+public:
 	char character;
 	int frequency;
+
 	bool operator<(const charFequ& c) const
 	{
 		return frequency > c.frequency;
 	}
 };
 
+struct encodeChar
+{
+public:
+	char character;
+	int encodeNum;
+};
+
+struct node
+{
+	charFequ feqchar;
+	node *left;
+	node *right;
+};
 
 void readin(deque<string> &s)
 {
@@ -85,28 +99,42 @@ void get_freq(deque<string> s,charFequ cf[],int &cf_elemnts)
 	cf_elemnts = elements_array;
 }
 
-int main()
+void write_file()
+{
+	//Create file with exten.
+	//print idenitfier
+	//print array of char to compression value
+}
+
+void get_encode(priority_queue<charFequ> in, encodeChar ec[] )
+{
+
+}
+
+int main()//TODO add argument for file to read in
 {
 	charFequ this_file[totalchar];
 	deque<string> File_In;
 	priority_queue<charFequ> pq_file_in;
-	int array_elements = 0;
+	int array_elements = 0, num_chars = 0;
 	charFequ temp_xfer;
+	encodeChar encode_char[totalchar];
 
 	readin(File_In);
-	get_freq(File_In, this_file,array_elements);
-
+	get_freq(File_In, this_file,array_elements);	
 	for (int i = 0; i < array_elements; i++)
 	{
 		pq_file_in.push(this_file[i]);
 	}
+
+	//* testing count
 	while (!pq_file_in.empty())
 	{
 		temp_xfer = pq_file_in.top();
 		pq_file_in.pop();
 		cout << temp_xfer.character <<" "<< temp_xfer.frequency << endl;
 	}
-
+	
 	//TODO create binary tree
 
 	system("pause");
