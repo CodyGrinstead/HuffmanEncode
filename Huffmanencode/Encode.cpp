@@ -135,37 +135,60 @@ HuffmanTree *build_tree(priority_queue<charFequ> &in)
 		heap.pop();
 		right = heap.top();
 		heap.pop();
-		root = new HuffmanTree(0, left->frequency + right->frequency, left, right);
+		root = new HuffmanTree('-', left->frequency + right->frequency, left, right);
 		heap.push(root);
 	}
 	return root;
+}
+
+void print_tree(HuffmanTree *t) {
+	deque< pair<HuffmanTree *, int> > q;
+
+	q.push_back(make_pair(t, 0));
+	int curlevel = -1;
+	while (!q.empty()) {
+		HuffmanTree *parent = q.front().first;
+		int level = q.front().second;
+		q.pop_front();
+		if (curlevel != level) {
+			curlevel = level;
+			cout << "Level " << curlevel << endl;
+		}
+		cout << parent->frequency << " " << parent->character << endl;
+		if (parent->left)
+			q.push_back(make_pair(parent->left, level + 1));
+		if (parent->right)
+			q.push_back(make_pair(parent->right, level + 1));
+	}
 }
 
 int main(int argc, char *argv[])
 {
 	charFequ this_file[totalchar];
 	deque<string> File_In;
-	ifstream inf;
+
+	readin(File_In);
+	/*ifstream inf;
 	inf.open(argv[0]);
-	int lineCount = 0;
-	string getl;
+	int lineCount = 0;	
 	while (!inf.eof())
 	{
 		getline(inf, getl);
 		File_In.push_back(getl);
 	}
-	inf.close();
+	inf.close();//*/
 	priority_queue<charFequ> pq_file_in;
 	int array_elements = 0, num_chars = 0;
 	charFequ temp_xfer;
 
-	//readin(File_In);
+	
 	get_freq(File_In, this_file,array_elements);	
 	for (int i = 0; i < array_elements; i++)
 	{
 		pq_file_in.push(this_file[i]);
 	}
-
+	HuffmanTree *root= build_tree(pq_file_in);
+	print_tree(root);
 	/* testing count
 	while (!pq_file_in.empty())
 	{
