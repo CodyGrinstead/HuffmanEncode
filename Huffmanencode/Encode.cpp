@@ -5,10 +5,12 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <vector>
 #include <queue>
  
 using namespace std;
 const int totalchar = 128;
+//phnz.jcnf.xmmd.nafp.xwna.rwfa.hfzn.cjpn
 
 struct charFequ
 {
@@ -22,18 +24,24 @@ public:
 	}
 };
 
-struct encodeChar
-{
-public:
+struct HuffmanTree {
 	char character;
-	int encodeNum;
-};
-
-struct node
-{
-	charFequ feqchar;
-	node *left;
-	node *right;
+	int frequency;
+	struct HuffmanTree *left;
+	struct HuffmanTree *right;
+	HuffmanTree(char c, int f, struct HuffmanTree *left = NULL,
+		struct HuffmanTree *right = NULL) :
+		character(c), frequency(f), left(left), right(right) {
+	}
+	~HuffmanTree() {
+		delete left, delete right;
+	}
+		class Compare {
+	public:
+		bool operator()(HuffmanTree *a, HuffmanTree *b) {
+			return a->frequency > b->frequency;
+		}
+	};
 };
 
 void readin(deque<string> &s)
@@ -41,7 +49,7 @@ void readin(deque<string> &s)
 	ifstream inf;
 	int lineCount = 0;
 	string getl;
-	inf.open("test.txt");
+	inf.open("Text.txt");
 	while (!inf.eof()) 
 	{
 		getline(inf, getl);
@@ -99,6 +107,8 @@ void get_freq(deque<string> s,charFequ cf[],int &cf_elemnts)
 	cf_elemnts = elements_array;
 }
 
+
+
 void write_file()
 {
 	//Create file with exten.
@@ -106,37 +116,65 @@ void write_file()
 	//print array of char to compression value
 }
 
-void get_encode(priority_queue<charFequ> in, encodeChar ec[] )
+HuffmanTree *build_tree(priority_queue<charFequ> &in)
 {
-
+	priority_queue<HuffmanTree *, vector<HuffmanTree *>, HuffmanTree::Compare> heap;
+	charFequ xfer;
+	while (!in.empty())
+	{
+		xfer = in.top();
+		in.pop();
+		HuffmanTree *leaf = new HuffmanTree(xfer.character, xfer.frequency);
+		heap.push(leaf);
+	}
+	HuffmanTree *root = NULL;
+	while (heap.size() > 1)
+	{
+		HuffmanTree *left, *right;
+		left = heap.top();
+		heap.pop();
+		right = heap.top();
+		heap.pop();
+		root = new HuffmanTree(0, left->frequency + right->frequency, left, right);
+		heap.push(root);
+	}
+	return root;
 }
 
-int main()//TODO add argument for file to read in
+int main(int argc, char *argv[])
 {
 	charFequ this_file[totalchar];
 	deque<string> File_In;
+	ifstream inf;
+	inf.open(argv[0]);
+	int lineCount = 0;
+	string getl;
+	while (!inf.eof())
+	{
+		getline(inf, getl);
+		File_In.push_back(getl);
+	}
+	inf.close();
 	priority_queue<charFequ> pq_file_in;
 	int array_elements = 0, num_chars = 0;
 	charFequ temp_xfer;
-	encodeChar encode_char[totalchar];
 
-	readin(File_In);
+	//readin(File_In);
 	get_freq(File_In, this_file,array_elements);	
 	for (int i = 0; i < array_elements; i++)
 	{
 		pq_file_in.push(this_file[i]);
 	}
 
-	//* testing count
+	/* testing count
 	while (!pq_file_in.empty())
 	{
 		temp_xfer = pq_file_in.top();
 		pq_file_in.pop();
 		cout << temp_xfer.character <<" "<< temp_xfer.frequency << endl;
 	}
+	*/
 	
-	//TODO create binary tree
-
 	system("pause");
 	return 0;
 }
