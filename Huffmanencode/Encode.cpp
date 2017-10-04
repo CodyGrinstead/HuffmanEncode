@@ -24,6 +24,13 @@ public:
 	}
 };
 
+struct table
+{
+public:
+	char c;
+	string b;
+};
+
 struct HuffmanTree {
 	char character;
 	int frequency;
@@ -162,11 +169,19 @@ void print_tree(HuffmanTree *t) {
 	}
 }
 
+void create_table(HuffmanTree *t, table tab[],int elements)
+{
+	while (t->left != NULL)
+	{
+
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	charFequ this_file[totalchar];
 	deque<string> File_In;
-
+	charFequ encode[totalchar];
 	readin(File_In);
 	/*ifstream inf;
 	inf.open(argv[0]);
@@ -188,7 +203,7 @@ int main(int argc, char *argv[])
 		pq_file_in.push(this_file[i]);
 	}
 	HuffmanTree *root= build_tree(pq_file_in);
-	print_tree(root);
+	//print_tree(root);
 	/* testing count
 	while (!pq_file_in.empty())
 	{
