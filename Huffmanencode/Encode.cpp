@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 #include <queue>
-#include <map>
 #include <bitset>
  
 using namespace std;
@@ -123,9 +122,11 @@ bitset<8> string_to_bit(string byte)
 
 void write_file(string docbit,ofstream &outf)
 {
+	
+	
 	int bit_mod = docbit.size() % 8;
 	string bytes;
-
+	//TODO Write magic number, write codetable for decode
 	for (int i = 0; i < docbit.size(); i += 8)
 	{
 		bytes = "";
@@ -203,7 +204,7 @@ void write_file(string docbit,ofstream &outf)
 		bytes += "0";
 		outf << string_to_bit(bytes);
 	}
-	
+	//TODO add askii EOF
 }
 
 void print_tree(HuffmanTree *t) {
@@ -231,24 +232,22 @@ void print_tree(HuffmanTree *t) {
 
 void leafpad(HuffmanTree *left)
 {
-	//print_tree(left);
+	
 	HuffmanTree *newleaf, *newleft, *newright;
-	while (left)
+	if (left)
 	{
 		newleaf = left;
 		newleft = newleaf->left;
 		newright = newleaf->right;
-		if (!newleft)break;
-		cout << newright->character << " " << newleft->character << endl;
-		system("pause");
-		newleft->codetable += "0";
-		newright->codetable += "1";
-		
-		leafpad(newleft);
-		leafpad(newright);
-		cout << "exitwhile" << endl;
+		if (newleft)
+		{
+			newleft->codetable += "0";
+			newright->codetable += "1";
+			leafpad(newleft);
+			leafpad(newright);
+		}
 	}
-	//cout << "exit leafpad" << endl;
+	
 }
 
 HuffmanTree *build_tree(priority_queue<charFequ> &in)
@@ -260,7 +259,7 @@ HuffmanTree *build_tree(priority_queue<charFequ> &in)
 	{
 		xfer = in.top();
 		in.pop();
-		HuffmanTree *leaf = new HuffmanTree(xfer.character, xfer.frequency);
+		HuffmanTree *leaf = new HuffmanTree(xfer.character, xfer.frequency,NULL,NULL);
 		heap.push(leaf);
 	}
 	HuffmanTree *root = NULL;
@@ -272,12 +271,10 @@ HuffmanTree *build_tree(priority_queue<charFequ> &in)
 		left->codetable = "0";
 		heap.pop();	
 		leafpad(left);
-		cout << "leaf left " << endl;
 		right = heap.top();
 		right->codetable = "1";
 		heap.pop();
 		leafpad(right);
-		cout << "leaf right" << endl;
 		root = new HuffmanTree('`', left->frequency + right->frequency, left, right);
 		
 		
@@ -308,24 +305,44 @@ string bit_stream(table t[], string doc, int elements)
 	return doc_bit;
 }
 
-string search_tree(HuffmanTree *t)
+void search_tree(HuffmanTree *t,char l,string &code)
 {
-	string ans;
-
-	return ans;
+	HuffmanTree *newleaf, *newleft, *newright;
+	if (left)
+	{
+		newleaf = t;
+		newleft = newleaf->left;
+		newright = newleaf->right;
+		if (newleft)
+		{
+			if (newleaf->character == l)
+				code = newleaf->codetable;
+			else if (newleft->character == l)
+				code = newleft->codetable;
+			else if (newright->character == l)
+				code = newright->codetable;
+			else
+			{
+				search_tree(newleft, l, code);
+				search_tree(newright, l, code);
+			}
+		}
+	}
 }
 
 void create_table(HuffmanTree *t, table tab[],int elements,charFequ inl[])
 {
-	string code;
-	int level;
-	
+	string code = "";
+	int level = 0;
+	cout << "elements = "<< elements << endl;
 	for (int i = 0; i < elements; i++)
 	{
 		tab[i].c = inl[i].character;
-		tab[i].b = search_tree(t);
+		search_tree(t, tab[i].c, code);
+		tab[i].b = code;
+		cout << tab[i].c <<" " <<tab[i].b<< endl;
+		level++;
 	}
-		
 }
 
 
@@ -334,6 +351,7 @@ int main(int argc, char *argv[])
 	charFequ this_file[totalchar];
 	deque<string> File_In;
 	charFequ encode[totalchar];
+	table tab[totalchar];
 	readin(File_In);
 	string getl, document;
 	ifstream inf;
@@ -359,16 +377,18 @@ int main(int argc, char *argv[])
 	}
 	HuffmanTree *root= build_tree(pq_file_in);
 	//print_tree(root);
-	/* testing count
-	while (!pq_file_in.empty())
+	//testing count
+	int charcount = 0;
+	/*while (!pq_file_in.empty())
 	{
 		temp_xfer = pq_file_in.top();
 		pq_file_in.pop();
 		cout << temp_xfer.character <<" "<< temp_xfer.frequency << endl;
+		charcount++;
 	}
-	*/
-	cout << document.size() << endl;
-	
+	//*/
+	create_table(root, tab, array_elements, this_file);
+	//cout << charcount <<" "<<array_elements<< endl;
 	system("pause");
 	return 0;
 }
